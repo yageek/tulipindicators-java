@@ -21,3 +21,8 @@ dependencies {
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
 }
+
+
+tasks.withType(Test) {
+    systemProperty "java.library.path", "../tulip-jni/build"
+}

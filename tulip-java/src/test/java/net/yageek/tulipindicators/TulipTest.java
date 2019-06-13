@@ -10,8 +10,9 @@ import org.junit.Test;
 public class TulipTest {
   @Test
   public void testSomeLibraryMethod() {
-    Tulip classUnderTest = new Tulip();
-    assertTrue("someLibraryMethod should return 'true'",
-               classUnderTest.someLibraryMethod());
+    Tulip bindinds = new Tulip();
+    
+    TulipRawResponse resp = bindinds.call_indicator("add", null, null);
+    assertNull(resp);
   }
 }
