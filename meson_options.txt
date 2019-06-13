@@ -1,0 +1,1 @@
+option('jni_include', type : 'string', description : 'The JNI include folder')
