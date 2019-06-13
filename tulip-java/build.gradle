@@ -22,6 +22,12 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
+test {
+     testLogging {
+        outputs.upToDateWhen {false}
+        showStandardStreams = true
+    }
+}
 
 tasks.withType(Test) {
     systemProperty "java.library.path", "../tulip-jni/build"

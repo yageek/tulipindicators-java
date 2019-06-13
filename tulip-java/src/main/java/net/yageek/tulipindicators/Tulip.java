@@ -13,11 +13,11 @@ public class Tulip {
 }
 
 class TulipRawResponse {
-  final double[] result;
-  final int beginIdx;
+  final double[] values;
+  final int beginIndex;
 
-  TulipRawResponse(double[] result, int beginIdx) {
-    this.result = result;
-    this.beginIdx = beginIdx;
+  TulipRawResponse(int beginIndex, double[] values) {
+    this.values = values;
+    this.beginIndex = beginIndex;
   }
 }

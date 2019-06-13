@@ -9,10 +9,23 @@ import org.junit.Test;
 
 public class TulipTest {
   @Test
-  public void testSomeLibraryMethod() {
+  public void testJNIBindings() {
     Tulip bindinds = new Tulip();
     
-    TulipRawResponse resp = bindinds.call_indicator("add", null, null);
-    assertNull(resp);
+    double[] inputs = new double[]{-1.0, -2.0, -3.0};
+    double[] expected = new double[]{1.0, 2.0, 3.0};
+    
+    TulipRawResponse resp = bindinds.call_indicator("add", inputs, null);
+
+    assertNotNull(resp);
+    
+    assertEquals(resp.beginIndex, 0);
+
+    assertEquals(resp.values.length, expected.length);
+
+    double EPS = 1e-4;
+    for(int i = 0; i < resp.values.length; i++) {
+      assertTrue(Math.abs(resp.values[i] - expected[i]) < EPS);
+    }
   }
 }
