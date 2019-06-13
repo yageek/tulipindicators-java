@@ -16,7 +16,7 @@ namespace tulipindicatorsjava {
 class TulipBindings {
     public: 
         TulipBindings();
-        TulipResponse call_indicator(const std::string& name, size_t inputs_len, double const *const *inputs, double const *options);
+        TulipResponse call_indicator(const std::string& name, size_t inputs_len, double const *inputs, double const *options);
 
     private:
     std::map<std::string, const ti_indicator_info*> indicators_map;

@@ -22,7 +22,7 @@ TulipBindings::TulipBindings()
     this->indicators_map = map;
 }
 
-TulipResponse TulipBindings::call_indicator(const std::string &name, size_t inputs_len, double const *const *inputs, double const *options)
+TulipResponse TulipBindings::call_indicator(const std::string &name, size_t inputs_len, double const *inputs, double const *options)
 {
     // We assume only valid call will be made
     auto search = this->indicators_map.find(name);
@@ -41,7 +41,7 @@ TulipResponse TulipBindings::call_indicator(const std::string &name, size_t inpu
     std::vector<const double *> all_inputs(info->inputs);
     for (auto i = 0; i < info->inputs; i++)
     {
-        all_inputs[i] = inputs[i * in_array_size];
+        all_inputs[i] = &inputs[i * in_array_size];
     }
 
     std::vector<double *> all_outputs(info->inputs);
