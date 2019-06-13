@@ -69,10 +69,12 @@ JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Tulip_call_1indicator(
 
     // We compute the value
     list_mutex.lock();
-    resp = global_list->call_indicator(indicator_name, size_t(input_length), &inputsC, optionsC);
+    // resp = global_list->call_indicator(indicator_name, size_t(input_length), &inputsC, optionsC);
+    resp = TulipResponse{.begin_index = 0, .outputs = std::vector<double>({1.0, 2.0, 3.0})};
     list_mutex.unlock();
-
+    
     // Read the outputs values
+    out_size = resp.outputs.size();
     outs = env->NewDoubleArray(out_size);
     if(outs == nullptr) {
         goto release_options;
