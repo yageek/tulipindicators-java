@@ -3,14 +3,19 @@
  */
 package net.yageek.tulipindicators;
 
-class Bindings {
+public class Bindings {
+
   static { System.loadLibrary("tulipjni"); }
   private native void loadIndicators();
-  native BindingsResponse call_indicator(String name, double[] inputs,
-                                         double[] options);
-  Bindings() { loadIndicators(); }
+  native Response call_indicator(String name, double[] inputs,
+                                 double[] options);
+  private Bindings() { loadIndicators(); }
 
-  static class Response {
+  private static Bindings INSTANCE = new Bindings();
+
+  static final Bindings shared() { return INSTANCE; }
+
+  public static class Response {
     final double[] values;
     final int beginIndex;
 

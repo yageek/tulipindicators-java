@@ -10,12 +10,12 @@ import org.junit.Test;
 public class TulipTest {
   @Test
   public void testJNIBindings() {
-    Bindings bindinds = new Bindings();
 
     double[] inputs = new double[] {-1.0, -2.0, -3.0};
     double[] expected = new double[] {1.0, 2.0, 3.0};
 
-    BindingsResponse resp = bindinds.call_indicator("abs", inputs, null);
+    Bindings.Response resp =
+        Bindings.shared().call_indicator("abs", inputs, null);
 
     assertNotNull(resp);
 

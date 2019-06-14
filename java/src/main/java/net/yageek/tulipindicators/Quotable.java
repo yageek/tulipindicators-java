@@ -1,3 +1,5 @@
+package net.yageek.tulipindicators;
+
 public interface Quotable {
 
   public default double getHigh() { return 0.0; }
