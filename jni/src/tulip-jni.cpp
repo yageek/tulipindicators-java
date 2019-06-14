@@ -10,7 +10,7 @@ using tulipindicatorsjava::TulipResponse;
 static std::unique_ptr<TulipBindings> global_list;
 static std::mutex list_mutex;
 
-JNIEXPORT void JNICALL Java_net_yageek_tulipindicators_Tulip_loadIndicators(JNIEnv *env, jobject obj)
+JNIEXPORT void JNICALL Java_net_yageek_tulipindicators_Bindings_loadIndicators(JNIEnv *env, jobject obj)
 {
     list_mutex.lock();
     if (!global_list)
@@ -20,8 +20,8 @@ JNIEXPORT void JNICALL Java_net_yageek_tulipindicators_Tulip_loadIndicators(JNIE
     list_mutex.unlock();
 }
 
-JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Tulip_call_1indicator(JNIEnv *env, jobject obj, jstring string, jdoubleArray inputs, jdoubleArray options)
-{   
+JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Bindings_call_1indicator(JNIEnv *env, jobject obj, jstring string, jdoubleArray inputs, jdoubleArray options)
+{
 
     // Only options could be NULL
     if (inputs == nullptr || string == nullptr)
@@ -70,36 +70,41 @@ JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Tulip_call_1indicator(
 
     // We compute the value
     list_mutex.lock();
-    if (!global_list) {
+    if (!global_list)
+    {
         return nullptr;
     }
     resp = global_list->call_indicator(indicator_name, size_t(input_length), &inputsC[0], &optionsC[0]);
     // resp = TulipResponse{.begin_index = 0, .outputs = std::vector<double>({1.0, 2.0, 3.0})};
     list_mutex.unlock();
-    
+
     // Read the outputs values
     out_size = resp.outputs.size();
     outs = env->NewDoubleArray(out_size);
-    if(outs == nullptr) {
+    if (outs == nullptr)
+    {
         goto release_options;
     }
 
     env->SetDoubleArrayRegion(outs, 0, out_size, &resp.outputs[0]);
 
     // Now call the constructor response
-    cls = env->FindClass("net/yageek/tulipindicators/TulipRawResponse");
-    if(cls == nullptr) {
+    cls = env->FindClass("net/yageek/tulipindicators/Bindings$Response");
+    if (cls == nullptr)
+    {
         return nullptr;
     }
     constructor = env->GetMethodID(cls, "<init>", "(I[D)V");
-     if(constructor == nullptr) {
+    if (constructor == nullptr)
+    {
         return nullptr;
     }
     resp_obj = env->NewObject(cls, constructor, resp.begin_index, outs);
     return resp_obj;
 
 release_options:
-    if(options != nullptr) {
+    if (options != nullptr)
+    {
         env->ReleaseDoubleArrayElements(options, optionsC, 0);
     }
 release_inputs:

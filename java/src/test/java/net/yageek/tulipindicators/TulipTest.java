@@ -10,21 +10,21 @@ import org.junit.Test;
 public class TulipTest {
   @Test
   public void testJNIBindings() {
-    Tulip bindinds = new Tulip();
-    
-    double[] inputs = new double[]{-1.0, -2.0, -3.0};
-    double[] expected = new double[]{1.0, 2.0, 3.0};
-    
-    TulipRawResponse resp = bindinds.call_indicator("abs", inputs, null);
+    Bindings bindinds = new Bindings();
+
+    double[] inputs = new double[] {-1.0, -2.0, -3.0};
+    double[] expected = new double[] {1.0, 2.0, 3.0};
+
+    BindingsResponse resp = bindinds.call_indicator("abs", inputs, null);
 
     assertNotNull(resp);
-    
+
     assertEquals(0, resp.beginIndex);
 
     assertEquals(expected.length, resp.values.length);
 
     double EPS = 1e-4;
-    for(int i = 0; i < resp.values.length; i++) {
+    for (int i = 0; i < resp.values.length; i++) {
       assertTrue(Math.abs(resp.values[i] - expected[i]) < EPS);
     }
   }
