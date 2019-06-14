@@ -15,13 +15,13 @@ public class TulipTest {
     double[] inputs = new double[]{-1.0, -2.0, -3.0};
     double[] expected = new double[]{1.0, 2.0, 3.0};
     
-    TulipRawResponse resp = bindinds.call_indicator("add", inputs, null);
+    TulipRawResponse resp = bindinds.call_indicator("abs", inputs, null);
 
     assertNotNull(resp);
     
-    assertEquals(resp.beginIndex, 0);
+    assertEquals(0, resp.beginIndex);
 
-    assertEquals(resp.values.length, expected.length);
+    assertEquals(expected.length, resp.values.length);
 
     double EPS = 1e-4;
     for(int i = 0; i < resp.values.length; i++) {

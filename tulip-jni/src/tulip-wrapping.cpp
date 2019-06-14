@@ -23,12 +23,15 @@ TulipBindings::TulipBindings()
 }
 
 TulipResponse TulipBindings::call_indicator(const std::string &name, size_t inputs_len, double const *inputs, double const *options)
-{
+{   
+
+        
     // We assume only valid call will be made
     auto search = this->indicators_map.find(name);
     if(search == this->indicators_map.end()) {
-        std::cout << "Not FOUND" << std::endl;
+        return TulipResponse{.begin_index = 0, .outputs=std::vector<double>(0)};
     }
+
     const ti_indicator_info *info = search->second;
 
     size_t in_array_size = inputs_len / info->inputs;

@@ -21,7 +21,8 @@ JNIEXPORT void JNICALL Java_net_yageek_tulipindicators_Tulip_loadIndicators(JNIE
 }
 
 JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Tulip_call_1indicator(JNIEnv *env, jobject obj, jstring string, jdoubleArray inputs, jdoubleArray options)
-{
+{   
+
     // Only options could be NULL
     if (inputs == nullptr || string == nullptr)
     {
@@ -69,6 +70,9 @@ JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Tulip_call_1indicator(
 
     // We compute the value
     list_mutex.lock();
+    if (!global_list) {
+        return nullptr;
+    }
     resp = global_list->call_indicator(indicator_name, size_t(input_length), &inputsC[0], &optionsC[0]);
     // resp = TulipResponse{.begin_index = 0, .outputs = std::vector<double>({1.0, 2.0, 3.0})};
     list_mutex.unlock();

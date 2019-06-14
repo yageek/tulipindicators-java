@@ -7,9 +7,13 @@ public class Tulip {
   static {
     System.loadLibrary("tulipjni");
   }
-  public native void loadIndicators();
+  private native void loadIndicators();
   public native TulipRawResponse call_indicator(String name, double[] inputs,
                                                 double[] options);
+    Tulip() {
+      loadIndicators();
+    }
+
 }
 
 class TulipRawResponse {
