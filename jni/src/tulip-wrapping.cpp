@@ -22,16 +22,17 @@ TulipBindings::TulipBindings()
     this->indicators_map = map;
 }
 
+const ti_indicator_info *TulipBindings::indicator_info(const std::string &name)
+{
+    auto search = this->indicators_map.find(name);
+    const ti_indicator_info *info = search->second;
+    return info;
+}
+
 TulipResponse TulipBindings::call_indicator(const std::string &name, size_t inputs_len, double const *inputs, double const *options)
 {
     // We assume only valid call will be made
-    auto search = this->indicators_map.find(name);
-    if (search == this->indicators_map.end())
-    {
-        return TulipResponse{.begin_index = 0, .outputs = std::vector<double>(0)};
-    }
-
-    const ti_indicator_info *info = search->second;
+    const ti_indicator_info *info = indicator_info(name);
 
     size_t in_array_size = inputs_len / info->inputs;
     int begin_idx = info->start(options);

@@ -20,7 +20,42 @@ JNIEXPORT void JNICALL Java_net_yageek_tulipindicators_Bindings_loadIndicators(J
     list_mutex.unlock();
 }
 
-JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Bindings_call_1indicator(JNIEnv *env, jobject obj, jstring string, jdoubleArray inputs, jdoubleArray options)
+JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Bindings_getIndicatorInfo(JNIEnv *env, jobject obj, jstring name)
+{
+
+    if (name == nullptr)
+    {
+        return nullptr;
+    }
+
+    // Get the name of the indicator
+    const char *input_name = env->GetStringUTFChars(name, nullptr);
+    if (input_name == nullptr)
+    {
+        return nullptr;
+    }
+    std::string indicator_name(input_name);
+    env->ReleaseStringUTFChars(name, input_name);
+
+    // Search
+    const ti_indicator_info *info = nullptr;
+    list_mutex.lock();
+    if (!global_list)
+    {
+        return nullptr;
+    }
+    info = global_list->indicator_info(indicator_name);
+    list_mutex.unlock();
+
+    jclass cls = env->FindClass("java/lang/String");
+    // Allocate every element names
+    jstring info_name = env->NewStringUTF(&info->name[0]);
+    jstring info_full_name = env->NewStringUTF(&info->full_name[0]);
+
+    jobjectArray info_inputs = env->NewObjectArray(info->inputs, cls);
+}
+
+JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Bindings_callIndicator(JNIEnv *env, jobject obj, jstring string, jdoubleArray inputs, jdoubleArray options)
 {
 
     // Only options could be NULL
@@ -75,7 +110,6 @@ JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Bindings_call_1indicat
         return nullptr;
     }
     resp = global_list->call_indicator(indicator_name, size_t(input_length), &inputsC[0], &optionsC[0]);
-    // resp = TulipResponse{.begin_index = 0, .outputs = std::vector<double>({1.0, 2.0, 3.0})};
     list_mutex.unlock();
 
     // Read the outputs values

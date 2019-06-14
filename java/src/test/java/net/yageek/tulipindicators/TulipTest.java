@@ -8,6 +8,14 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class TulipTest {
+
+  public void assertDoubleArrayEquals(double[] lhs, double[] rhs, double EPS) {
+    assertEquals(lhs.length, rhs.length);
+
+    for (int i = 0; i < rhs.length; i++) {
+      assertTrue(Math.abs(rhs[i] - lhs[i]) < EPS);
+    }
+  }
   @Test
   public void testJNIBindings() {
 
@@ -15,17 +23,26 @@ public class TulipTest {
     double[] expected = new double[] {1.0, 2.0, 3.0};
 
     Bindings.Response resp =
-        Bindings.shared().call_indicator("abs", inputs, null);
+        Bindings.shared().callIndicator("abs", inputs, null);
 
     assertNotNull(resp);
 
     assertEquals(0, resp.beginIndex);
+    assertDoubleArrayEquals(expected, resp.values, 1e-4);
+  }
 
-    assertEquals(expected.length, resp.values.length);
+  @Test
+  public void testAverages() {
+    final double[] inputs =
+        new double[] {81.59, 81.06, 82.87, 83.00, 83.61, 83.15, 82.84, 83.99,
+                      84.55, 84.36, 85.53, 86.54, 86.89, 87.77, 87.29};
 
-    double EPS = 1e-4;
-    for (int i = 0; i < resp.values.length; i++) {
-      assertTrue(Math.abs(resp.values[i] - expected[i]) < EPS);
-    }
+    final double[] expected =
+        new double[] {82.426, 82.738, 83.094, 83.318, 83.628, 83.778,
+                      84.254, 84.994, 85.574, 86.218, 86.804};
+    final int period = 5;
+    Bindings.Response resp = Tulip.sma(inputs, 5);
+
+    assertDoubleArrayEquals(expected, resp.values, 1e-4);
   }
 }
