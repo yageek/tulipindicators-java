@@ -27,13 +27,10 @@ public class Bindings {
   static final Bindings shared() { return INSTANCE; }
 
   public enum IndicatorKind {
-    OVERLAY(0),     // TI_TYPE_OVERLAY
-    MATH(1),        // TI_TYPE_MATH
-    SIMPLE(2),      // TI_TYPE_SIMPLE
-    COMPARATIVE(3); // TI_TYPE_COMPARATIVE
-
-    private final int kindValue;
-    private IndicatorKind(int value) { this.kindValue = value; }
+    OVERLAY,     // TI_TYPE_OVERLAY
+    MATH,        // TI_TYPE_MATH
+    SIMPLE,      // TI_TYPE_SIMPLE
+    COMPARATIVE; // TI_TYPE_COMPARATIVE
   }
 
   public static class IndicatorInfo {
@@ -45,14 +42,26 @@ public class Bindings {
     public final String[] outputs;
     public final IndicatorKind kind;
 
-    IndicatorInfo(String name, String fullName, String[] inputs,
-                  String[] options, String[] outputs, IndicatorKind kind) {
+    static IndicatorKind indicatorInfoFromInt(int kind) {
+      switch (kind) {
+      case 0:
+        return IndicatorKind.OVERLAY;
+      case 1:
+        return IndicatorKind.MATH;
+      case 2:
+        return IndicatorKind.SIMPLE;
+      default:
+        return IndicatorKind.COMPARATIVE;
+      }
+    }
+    private IndicatorInfo(String name, String fullName, String[] inputs,
+                          String[] options, String[] outputs, int kind) {
       this.name = name;
       this.fullName = fullName;
       this.inputs = inputs;
       this.options = options;
       this.outputs = outputs;
-      this.kind = kind;
+      this.kind = IndicatorInfo.indicatorInfoFromInt(kind);
     }
   }
 

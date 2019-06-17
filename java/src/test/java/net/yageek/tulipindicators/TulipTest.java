@@ -45,4 +45,10 @@ public class TulipTest {
 
     assertDoubleArrayEquals(expected, resp.values, 1e-4);
   }
+
+  @Test
+  public void testInfoValues() {
+    Bindings.IndicatorInfo info = Bindings.shared().getIndicatorInfo("sma");
+    assertEquals("sma", info.name);
+  }
 }

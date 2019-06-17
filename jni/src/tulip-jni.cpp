@@ -20,17 +20,47 @@ JNIEXPORT void JNICALL Java_net_yageek_tulipindicators_Bindings_loadIndicators(J
     list_mutex.unlock();
 }
 
+jobjectArray _java_string_array_from_c_string(JNIEnv *env, size_t len, char *const *names)
+{
+    // Get string class
+    jclass string_cls = env->FindClass("java/lang/String");
+
+    // Convert the first
+    jstring first = env->NewStringUTF(names[0]);
+    if (!first)
+    {
+        return nullptr;
+    }
+
+    jobjectArray array = env->NewObjectArray(len, string_cls, first);
+    if (!array)
+    {
+        return nullptr;
+    }
+
+    for (int i = 1; i < len; i++)
+    {
+        jstring first = env->NewStringUTF(names[0]);
+        if (first)
+        {
+            env->SetObjectArrayElement(array, i, first);
+        }
+    }
+
+    return array;
+}
+
 JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Bindings_getIndicatorInfo(JNIEnv *env, jobject obj, jstring name)
 {
 
-    if (name == nullptr)
+    if (!name)
     {
         return nullptr;
     }
 
     // Get the name of the indicator
     const char *input_name = env->GetStringUTFChars(name, nullptr);
-    if (input_name == nullptr)
+    if (input_name)
     {
         return nullptr;
     }
@@ -47,19 +77,35 @@ JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Bindings_getIndicatorI
     info = global_list->indicator_info(indicator_name);
     list_mutex.unlock();
 
-    jclass cls = env->FindClass("java/lang/String");
     // Allocate every element names
     jstring info_name = env->NewStringUTF(&info->name[0]);
     jstring info_full_name = env->NewStringUTF(&info->full_name[0]);
+    jobjectArray info_inputs = _java_string_array_from_c_string(env, info->inputs, &info->input_names[0]);
+    jobjectArray info_options = _java_string_array_from_c_string(env, info->options, &info->option_names[0]);
+    jobjectArray info_outputs = _java_string_array_from_c_string(env, info->outputs, &info->output_names[0]);
 
-    jobjectArray info_inputs = env->NewObjectArray(info->inputs, cls);
+    // Allocate Info
+    jclass cls = env->FindClass("net/yageek/tulipindicators/Bindings$IndicatorInfo");
+    if (!cls)
+    {
+        return nullptr;
+    }
+
+    jmethodID constructor = env->GetMethodID(cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;I)V");
+    if (!constructor)
+    {
+        return nullptr;
+    }
+
+    jobject indicator = env->NewObject(cls, constructor, info_name, info_full_name, info_inputs, info_options, info_outputs, info->type);
+    return indicator;
 }
 
 JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Bindings_callIndicator(JNIEnv *env, jobject obj, jstring string, jdoubleArray inputs, jdoubleArray options)
 {
 
     // Only options could be NULL
-    if (inputs == nullptr || string == nullptr)
+    if (!inputs || !string)
     {
         return nullptr;
     }
@@ -78,7 +124,7 @@ JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Bindings_callIndicator
 
     // Name
     const char *input_name = env->GetStringUTFChars(string, nullptr);
-    if (input_name == nullptr)
+    if (!input_name)
     {
         return nullptr;
     }
@@ -87,17 +133,17 @@ JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Bindings_callIndicator
 
     // Inputs
     inputsC = env->GetDoubleArrayElements(inputs, NULL);
-    if (inputsC == nullptr)
+    if (!inputsC)
     {
         goto out;
     }
     input_length = env->GetArrayLength(inputs);
 
     // Options
-    if (options != nullptr)
+    if (options)
     {
         optionsC = env->GetDoubleArrayElements(options, NULL);
-        if (optionsC == nullptr)
+        if (!optionsC)
         {
             goto release_inputs;
         }
@@ -115,7 +161,7 @@ JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Bindings_callIndicator
     // Read the outputs values
     out_size = resp.outputs.size();
     outs = env->NewDoubleArray(out_size);
-    if (outs == nullptr)
+    if (!outs)
     {
         goto release_options;
     }
@@ -124,12 +170,12 @@ JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Bindings_callIndicator
 
     // Now call the constructor response
     cls = env->FindClass("net/yageek/tulipindicators/Bindings$Response");
-    if (cls == nullptr)
+    if (!cls)
     {
         return nullptr;
     }
     constructor = env->GetMethodID(cls, "<init>", "(I[D)V");
-    if (constructor == nullptr)
+    if (!constructor)
     {
         return nullptr;
     }
@@ -137,7 +183,7 @@ JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Bindings_callIndicator
     return resp_obj;
 
 release_options:
-    if (options != nullptr)
+    if (options)
     {
         env->ReleaseDoubleArrayElements(options, optionsC, 0);
     }
