@@ -34,4 +34,6 @@ public class Tulip {
     return Bindings.shared().callIndicator("wma", inputs,
                                            new double[] {period});
   }
+
+  
 }
