@@ -41,10 +41,11 @@ jobjectArray _java_string_array_from_c_string(JNIEnv *env, size_t len, char *con
     for (int i = 1; i < len; i++)
     {
         jstring first = env->NewStringUTF(names[0]);
-        if (first)
+        if (!first)
         {
-            env->SetObjectArrayElement(array, i, first);
+            return nullptr;
         }
+        env->SetObjectArrayElement(array, i, first);
     }
 
     return array;
@@ -60,7 +61,7 @@ JNIEXPORT jobject JNICALL Java_net_yageek_tulipindicators_Bindings_getIndicatorI
 
     // Get the name of the indicator
     const char *input_name = env->GetStringUTFChars(name, nullptr);
-    if (input_name)
+    if (!input_name)
     {
         return nullptr;
     }

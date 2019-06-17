@@ -50,5 +50,9 @@ public class TulipTest {
   public void testInfoValues() {
     Bindings.IndicatorInfo info = Bindings.shared().getIndicatorInfo("sma");
     assertEquals("sma", info.name);
+    assertEquals("Simple Moving Average", info.fullName);
+    assertEquals(1, info.inputs.length);
+    assertEquals(1, info.options.length);
+    assertEquals(1, info.outputs.length);
   }
 }
